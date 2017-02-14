@@ -53,6 +53,7 @@ func (router *Router) DELETE(path string, handler http.HandlerFunc) {
 }
 
 func (router *Router) Handle(method string, path string, handler http.HandlerFunc) {
+	//todo: allow multiple handlers
 	if router.handlers[method] == nil {
 		router.handlers[method] = append(router.handlers[method], &Route{method: method, path: path, handler: handler})
 	}
