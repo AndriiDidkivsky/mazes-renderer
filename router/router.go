@@ -21,11 +21,11 @@ func New() *Router {
 }
 
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.URL.Path)
 	if handlers, ok := router.handlers[r.Method]; ok {
-		for _, handler := range handlers {
-			fmt.Println(handler.path, r.URL.Path[1:])
+		for _, handler := range handlers {		
 			//todo: develop path parse logic and routing tree
-			if handler.path == r.URL.Path[1:] {
+			if handler.path == r.URL.Path {
 				handler.handler(w, r)
 			}
 		}
@@ -53,6 +53,9 @@ func (router *Router) DELETE(path string, handler http.HandlerFunc) {
 }
 
 func (router *Router) Handle(method string, path string, handler http.HandlerFunc) {
+	if path[0:1] != "/" {
+		panic("path sould start from")
+	} 
 	//todo: allow multiple handlers
 	if router.handlers[method] == nil {
 		router.handlers[method] = append(router.handlers[method], &Route{method: method, path: path, handler: handler})
