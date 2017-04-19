@@ -51,6 +51,9 @@ func (router *Router) PATCH(path string, handler http.HandlerFunc) {
 func (router *Router) DELETE(path string, handler http.HandlerFunc) {
 	router.Handle("DELETE", path, handler)
 }
+func (router *Router) OPTIONS(path string, handler http.HandlerFunc) {
+	router.Handle("OPTIONS", path, handler)
+}
 
 func (router *Router) Handle(method string, path string, handler http.HandlerFunc) {
 	if path[0:1] != "/" {
