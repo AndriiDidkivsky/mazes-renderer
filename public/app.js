@@ -5,22 +5,66 @@
       endpoint: 'http://localhost:3333/btree',
       text: 'binary tree',
       data: {
-        Width: 10,
-        Height: 10
+        Width: 20,
+        Height: 20
       }
     }
   ]
 
   class MazeRenderer { 
-    constructor (ctx) {
-      if(!ctx) { 
-        throw new Error('Context is required');
+
+    constructor (canvas) {
+      if(!canvas) { 
+        throw new Error('Canvas is required');
       }
-      this.ctx = ctx;
+      this.canvas = canvas;
+      this.width = this.canvas.width;
+      this.height = this.canvas.height
+      this.ctx = this.canvas.getContext('2d');
+      this.wallsCollor = 'black';
+      this.cellSize = 20;
     } 
 
-    draw (maze) {
+    clear () {
+      this.ctx.clearRect(0, 0, this.width, this.height)
+    }
 
+    draw (maze) {
+      this.clear();
+      this.drawBorder(maze);
+      this.drawBody(maze)
+    } 
+
+    drawBody (maze) {
+      maze.forEach((row, i)=>{
+        row.forEach((cell, j)=>{
+          this.drawCell(cell, j, i)
+        })
+      })
+    } 
+
+    drawCell(cell, i, j) {
+        const h = this.cellSize * j;
+        const w = this.cellSize * i
+
+        if(cell.RightWall) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(w + this.cellSize, h)
+            this.ctx.lineTo(w + this.cellSize, h + this.cellSize )
+            this.ctx.stroke()
+        }
+        
+        if(cell.BottomWall) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(w, h + this.cellSize )
+            this.ctx.lineTo(w + this.cellSize, h + this.cellSize )
+            this.ctx.stroke()
+        } 
+    }
+
+    drawBorder (maze) {
+      this.ctx.fillStyle = this.wallsCollor;
+      this.ctx.strokeRect(0, 0, maze[0].length * this.cellSize, maze.length * this.cellSize);
     } 
   }
 
@@ -49,8 +93,7 @@
         el.addEventListener('click', (_)=>{
           this.getMaze(item)
             .then(res=>res.json())
-            .then(json=>this.render.draw(maze))
-
+            .then(maze=>this.render.draw(maze))
         })
         container.appendChild(el);
       })
@@ -59,8 +102,7 @@
     init() {
       const nav = document.querySelector('nav');
       const canvas = document.querySelector('canvas');
-      const ctx = canvas.getContext('2d');
-      this.render = new MazeRenderer(ctx);
+      this.render = new MazeRenderer(canvas);
       this.generateMenu(nav, MAZES);
     }     
   } 
