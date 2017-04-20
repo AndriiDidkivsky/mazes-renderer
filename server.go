@@ -23,7 +23,6 @@ func btreeMaze(w http.ResponseWriter, r *http.Request) {
 	maze := btree_maze.GenerateMaze(body.Width, body.Height)
 	fmt.Println(maze)
 	// m, _ := json.Marshal(maze)
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(maze); err != nil {

@@ -77,11 +77,7 @@
       return fetch(maze.endpoint, {
         method: 'POST',
         body: JSON.stringify(maze.data),
-        mode: 'cors',
-        headers: {
-          'Accept': 'application/json, text/plain, */*',
-          'Content-Type': 'application/json'
-        }
+        mode: 'cors'
       }) 
     }
 
