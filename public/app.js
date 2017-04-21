@@ -86,14 +86,16 @@
         const el = document.createElement('a');
         el.href = '#'
         el.textContent = item.text
-        el.addEventListener('click', (_)=>{
-          this.getMaze(item)
-            .then(res=>res.json())
-            .then(maze=>this.render.draw(maze))
-        })
+        el.addEventListener('click', ()=>this.clickMenuHandler(item))
         container.appendChild(el);
       })
     }
+
+    async clickMenuHandler (item) {
+      const res = await this.getMaze(item)
+      const maze = await res.json()
+      this.render.draw(maze)
+    } 
 
     init() {
       const nav = document.querySelector('nav');
