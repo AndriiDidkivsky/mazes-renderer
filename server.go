@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./middleware"
 	"./router"
 	"encoding/json"
 	"fmt"
@@ -30,8 +31,16 @@ func btreeMaze(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func testChain(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Chained 1")
+		h.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	router := router.New()
+	bindedRouter := middleware.New(testChain).Bind(router)
 	//think about cors middleware
 	router.OPTIONS("/btree", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("OPTIONS")
@@ -44,6 +53,6 @@ func main() {
 
 	fmt.Println("listen localhost:3333")
 	// http.HandleFunc("/", handler)
-	http.ListenAndServe(":3333", router)
+	http.ListenAndServe(":3333", bindedRouter)
 
 }
