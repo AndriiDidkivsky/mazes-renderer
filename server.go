@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./cors"
 	"./middleware"
 	"./router"
 	"encoding/json"
@@ -22,9 +23,6 @@ func btreeMaze(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 	maze := btree_maze.GenerateMaze(body.Width, body.Height)
-	fmt.Println(maze)
-	// m, _ := json.Marshal(maze)
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(maze); err != nil {
 		panic(err)
@@ -40,19 +38,17 @@ func testChain(h http.Handler) http.Handler {
 
 func main() {
 	router := router.New()
-	bindedRouter := middleware.New(testChain).Bind(router)
-	//think about cors middleware
-	router.OPTIONS("/btree", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("OPTIONS")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization,X-CSRF-Token")
-		w.Header().Set("Access-Control-Expose-Headers", "Authorization")
-	})
-	router.POST("/btree", btreeMaze)
+	options := &cors.Options{
+		AllowOrigins: "*",
+		AllowMethods: []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
+		AllowHeaders: []string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding"},
+	}
+	corsMid := cors.New(options)
 
+	bindedRouter := middleware.New(testChain, corsMid.Handler).Bind(router)
+
+	router.POST("/btree", btreeMaze)
 	fmt.Println("listen localhost:3333")
-	// http.HandleFunc("/", handler)
 	http.ListenAndServe(":3333", bindedRouter)
 
 }
