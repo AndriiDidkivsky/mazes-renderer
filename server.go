@@ -29,13 +29,6 @@ func btreeMaze(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func testChain(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Chained 1")
-		h.ServeHTTP(w, r)
-	})
-}
-
 func main() {
 	router := router.New()
 	options := &cors.Options{
@@ -45,7 +38,7 @@ func main() {
 	}
 	corsMid := cors.New(options)
 
-	bindedRouter := middleware.New(testChain, corsMid.Handler).Bind(router)
+	bindedRouter := middleware.New(corsMid.Handler).Bind(router)
 
 	router.POST("/btree", btreeMaze)
 	fmt.Println("listen localhost:3333")
