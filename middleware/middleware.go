@@ -10,11 +10,11 @@ type Middleware struct {
 	constructors []HandlerConstructor
 }
 
-func New(constructors ...HandlerConstructor) Middleware {
-	return Middleware{constructors}
+func New(constructors ...HandlerConstructor) *Middleware {
+	return &Middleware{constructors}
 }
 
-func (m Middleware) Bind(h http.Handler) http.Handler {
+func (m *Middleware) Bind(h http.Handler) http.Handler {
 	for i := range m.constructors {
 		h = m.constructors[len(m.constructors)-1-i](h)
 	}
